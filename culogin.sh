@@ -1,5 +1,6 @@
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2015 Yun Liu
+# Version 2015-09-22
 
 START=99
 
@@ -19,6 +20,7 @@ echo `date +'%Y-%m-%d %H:%M:%S'` >> $LOGFILE
 WLANUSERIP=`ifconfig | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
 until [ $WLANUSERIP ]
 do
+	sleep 3
 	echo "Retry for WAN IP" >> $LOGFILE
 	WLANUSERIP=`ifconfig | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
 done
@@ -26,6 +28,7 @@ echo $WLANUSERIP >> $LOGFILE
 COOKIE=`curl 114.247.41.52:808 -I -s --retry 100 | grep "Set-Cookie" | cut -c13-55`
 login
 while [ $STATUS ]
-do login
+do 
+	login
 done
 }
