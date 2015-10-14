@@ -1,6 +1,6 @@
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2015 Yun Liu
-# Version 2015-10-13
+# Version 2015-10-14
 
 START=99
 
@@ -27,7 +27,7 @@ done
 echo `date +'%Y-%m-%d %H:%M:%S'` "User IP:" $WLANUSERIP >> $LOGFILE
 COOKIE=`curl 114.247.41.52:808 -I -s --retry 100 | grep "Set-Cookie" | cut -c13-55`
 login
-while [ $STATUS ]
+while [ "$STATUS" ]
 do 
 	login
 done
