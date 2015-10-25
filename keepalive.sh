@@ -1,0 +1,2 @@
+#!/bin/sh
+curl 'http://114.247.41.52:808/protalAction!alive.action' -X POST -H 'Cookie: JSESSIONID=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' -H 'Origin: http://114.247.41.52:808' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: zh-CN,zh;q=1' -H 'Mozilla/5.0 (iPad; CPU OS 9_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/7.0 Mobile/13B5110e Safari/600.1.4' -H 'Accept: */*' -H 'Referer: http://114.247.41.52:808/protalAction!toSuccess.action' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' -H 'Content-Length: 0'
