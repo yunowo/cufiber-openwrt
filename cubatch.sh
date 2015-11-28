@@ -25,8 +25,8 @@ do
 	echo `date +'%Y-%m-%d %H:%M:%S'` "Retry for $1 IP." >> $LOGFILE
 	L=`expr $L + 1`
 	WLANUSERIP=`ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
-	if [ "$L" -gt 10 && "$1" != "eth0.2"]
-		ifup $1
+	if [ "$L" -gt 10 && "$2" != "wan"]
+		ifup $2
 		L=0
 	fi
 done
@@ -38,7 +38,7 @@ all() {
 I=0
 J=0
 log "Starting WAN."
-getuserip eth0.2
+getuserip eth0.2 wan
 STATUS=1
 while [ "$STATUS" ]
 do
@@ -52,7 +52,7 @@ do
 	J=`expr $J + 1`
 	K=0
 	log "Starting macvlan$I."
-	getuserip macvlan$I
+	getuserip macvlan$I vwan$I
 
 	REFUSED=1
 	while [[ "$REFUSED" != "" && "$K" -lt 5 ]]
@@ -88,7 +88,7 @@ fi
 J=20
 K=0
 ifup $1
-getuserip $2
+getuserip $2 $1
 
 REFUSED=1
 while [[ "$REFUSED" != "" && "$K" -lt 20 ]]
