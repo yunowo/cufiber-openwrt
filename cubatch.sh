@@ -17,12 +17,18 @@ STATUS=`echo $RESPONSE | grep -oE "parsererror|No result defined|msg:,obj:null"`
 }
 
 getuserip() {
+L=0
 WLANUSERIP=`ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
 until [ $WLANUSERIP ]
 do
 	sleep 3
 	echo `date +'%Y-%m-%d %H:%M:%S'` "Retry for $1 IP." >> $LOGFILE
+	L=`expr $L + 1`
 	WLANUSERIP=`ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
+	if [ "$L" -gt 10 && "$1" != "eth0.2"]
+		ifup $1
+		L=0
+	fi
 done
 log "User IP: $WLANUSERIP"
 COOKIE=`curl "http://114.247.41.52:808" -I -s --retry 100 | grep "Set-Cookie" | cut -c13-55`
