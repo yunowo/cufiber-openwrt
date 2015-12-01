@@ -26,6 +26,7 @@ do
 	L=`expr $L + 1`
 	WLANUSERIP=`ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
 	if [ "$L" -gt 10 && "$2" != "wan"]
+	then
 		ifup $2
 		L=0
 	fi
