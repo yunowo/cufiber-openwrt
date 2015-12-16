@@ -21,12 +21,13 @@ L=0
 WLANUSERIP=`ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
 until [ $WLANUSERIP ]
 do
-	sleep 3
+	sleep 5
 	echo `date +'%Y-%m-%d %H:%M:%S'` "Retry for $1 IP." >> $LOGFILE
 	L=`expr $L + 1`
 	WLANUSERIP=`ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
-	if [ "$L" -gt 10 && "$2" != "wan"]
+	if [ "$L" -gt 5 ]
 	then
+		log "ifup $2"
 		ifup $2
 		L=0
 	fi
