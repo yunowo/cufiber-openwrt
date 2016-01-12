@@ -33,7 +33,7 @@ do
 	fi
 done
 log "User IP: $WLANUSERIP"
-COOKIE=`curl "http://114.247.41.52:808" -I -s --retry 100 | grep "Set-Cookie" | cut -c13-55`
+COOKIE=`curl "http://114.247.41.52:808" --head -s --connect-timeout 20 | grep "Set-Cookie" | cut -c13-55`
 }
 
 all() {
