@@ -19,7 +19,6 @@ if __name__ == '__main__':
     info = cucommon.IfInfo()
     for interface in INTERFACES:
         ip = info.get_ip(interface, logger)
-
         success = False
         retry = 0
         while not success and retry < 5 and current < len(username):

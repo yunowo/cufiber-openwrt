@@ -1,24 +1,22 @@
 import ifcfg
 
 import cucommon
+import userfinderconfig
 
-INTERFACES = []
+user_num = userfinderconfig.user_num
+begin = userfinderconfig.begin
+password = userfinderconfig.password
+INTERFACES = userfinderconfig.interfaces
 
 if __name__ == '__main__':
     logger = cucommon.get_logger('/tmp/userfinder.log')
 
-    with open('userfinder.txt', 'r') as file:
-        usernum = int(file.readline().strip('\n'))
-        begin = int(file.readline().strip('\n'))
-        password = file.readline().strip('\n')
-        INTERFACES = file.readline().strip('\n').split(',')
     current_user = begin
     info = cucommon.IfInfo()
     for interface in INTERFACES:
         ip = info.get_ip(interface, logger)
-
         success = False
-        while not success and current_user - begin < usernum:
+        while not success and current_user - begin < user_num:
             result = cucommon.login(str(current_user), password, ip, logger)
             try:
                 msg = result['msg']
