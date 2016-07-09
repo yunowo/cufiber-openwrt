@@ -12,5 +12,5 @@ cubatch.sh
 
 Pyhton 3 version:
 ```
-pyhton3 cubatch.py
+python3 cubatch.py
 ```
