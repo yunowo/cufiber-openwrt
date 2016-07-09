@@ -3,13 +3,14 @@
 China Unicom "wo201" login script for OpenWrt
 
 ##Usage
-culogin.sh is deprecated, use cubatch.sh instead.
-
 For all interfaces:
+
+Shell version:
 ```
-cubatch.sh all
+cubatch.sh
 ```
-For single interface:
+
+Pyhton 3 version:
 ```
-cubatch.sh vwan1 macvlan1
+pyhton3 cubatch.py
 ```
