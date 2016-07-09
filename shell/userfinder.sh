@@ -42,7 +42,7 @@ do
 	done
 	RESULTS=`echo $RESPONSE | grep -oE "login refused|login success|connection created|msg:,obj:null"`
 	case $RESULTS in
-		"login refused") log "$USERNAME refused."
+		"login refused") log "$USERNAME refused.";;
 		"msg:,obj:null") log "$USERNAME null."
 		I=`expr $I - 1`
 		USERNAME=`expr $USERNAME - 1`;;
