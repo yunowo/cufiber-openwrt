@@ -1,5 +1,4 @@
 /.idea
-/Release
-/python3/ifcfg
-/python3/users.txt
+*.csv
 /python3/userfinderconfig.py
+/shell/userfinderconfig.txt

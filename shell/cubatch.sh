@@ -1,81 +1,100 @@
 #!/bin/bash
-# Copyright (C) 2015 Yun Liu
-USERNAME=(23333333 23333333)
-PASSWORD="23333333"
-LOGFILE=/tmp/cubatch.log
-UA="Mozilla/5.0 (iPad; CPU OS 10_0 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/51.0.2704.104 Mobile/14A5261v Safari/601.1.46"
-NUM=10
+# Copyright (C) 2016 Yun Liu
+LOGFILE="/tmp/cubatch.log"
+UA="Mozilla/5.0 (iPad; CPU OS 10_1 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14B67 Safari/601.1.46"
+IF_NUM=10
 
 log() {
-    echo -e `date +'%Y-%m-%d %H:%M:%S'` $1 >> ${LOGFILE}
+  echo -e "$(date +'%Y-%m-%d %H:%M:%S') $1" >> "${LOGFILE}" 2>&1
 }
 
-login() {
-    response=`curl "http://114.247.41.52:808/protalAction!portalAuth.action?" -H "Cookie: ${COOKIE}" -H "Origin: http://114.247.41.52:808" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: zh-CN,zh;q=1" -H "User-Agent: ${UA}" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: application/json, text/javascript, */*" -H "Referer: http://114.247.41.52:808/protalAction!index.action?wlanuserip=${WLANUSERIP}&basip=61.148.2.182" -H "X-Requested-With: XMLHttpRequest" -H "Connection: keep-alive" --data "wlanuserip=${WLANUSERIP}&localIp=&basip=61.148.2.182&lpsUserName=${USERNAME[$1]}&lpsPwd=${PASSWORD}" -s`
-    # log "$RESPONSE"
+load_users() {
+  USERS_FILE="$(cd $(dirname $0); pwd)/users.csv"
+  usernames=()
+  passwords=()
+  while IFS=",", read username password; do
+    usernames+=(${username})
+    passwords+=(${password})
+  done < "${USERS_FILE}"
 }
 
 get_ip() {
-    retry=0
-    WLANUSERIP=`ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
-    until [[ -n "${WLANUSERIP}" ]]; do
-        sleep 5
-        echo `date +'%Y-%m-%d %H:%M:%S'` "Retry for $1 IP." >> ${LOGFILE}
-        retry=`expr ${retry} + 1`
-        WLANUSERIP=`ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1'`
-        if [[ "$retry" -gt 5 ]]; then
-            log "ifup $2"
-            ifup $2
-            retry=0
-        fi
-    done
-    log "User IP: ${WLANUSERIP}"
-    COOKIE=`curl "http://114.247.41.52:808" --head -s --connect-timeout 20 | grep "Set-Cookie" | cut -c13-55`
+  ip_retry=0
+  ip=$(ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1')
+  until [[ -n "${ip}" ]]; do
+    sleep 5
+    log "Retry for $1 IP."
+    ((ip_retry += 1))
+    ip=$(ip -4 addr show $1 | grep -oE "172\.16\.[0-9]{1,3}\.[0-9]{1,3}" | awk 'NR==1')
+    if [[ "${ip_retry}" -gt 5 ]]; then
+      log "ifup $2"
+      ifup "$2"
+      ip_retry=0
+    fi
+  done
+  log "IP: ${ip}"
+  cookie=$(curl "http://114.247.41.52:808" --head -s --connect-timeout 10 | grep "Set-Cookie" | cut -c13-55)
+}
+
+login() {
+  response=$(curl "http://114.247.41.52:808/protalAction!portalAuth.action?" \
+    -H "Cookie: ${cookie}" \
+    -H "Origin: http://114.247.41.52:808" \
+    -H "Accept-Encoding: gzip, deflate" \
+    -H "Accept-Language: zh-CN,zh;q=1" \
+    -H "User-Agent: ${UA}" \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -H "Accept: application/json, text/javascript, */*" \
+    -H "Referer: http://114.247.41.52:808/protalAction!index.action?wlanuserip=${ip}&basip=61.148.2.182" \
+    -H "X-Requested-With: XMLHttpRequest" \
+    -H "Connection: keep-alive" \
+    --data "wlanuserip=${ip}&localIp=&basip=61.148.2.182&lpsUserName=${usernames[$1]}&lpsPwd=${passwords[$1]}" \
+    --connect-timeout 5 -s)
 }
 
 all() {
-    I=0
-    J=0
-    log "Starting WAN."
-    get_ip eth0.2 wan
-    login ${J}
-    log "WAN done."
-
-    while [[ "$I" -lt "${NUM}" ]]; do
-        I=`expr ${I} + 1`
-        J=`expr ${J} + 1`
-        retry=0
-        log "Starting macvlan$I."
-        get_ip macvlan${I} vwan${I}
-
-        refused=1
-        while [[ -n "${refused}" && "${retry}" -lt 5 && "$J" -lt "${NUM}" ]]; do
-            retry=`expr ${retry} + 1`
-            STATUS=1
-            login ${J}
-
-            refused=`echo ${response} | grep -oE "login refused"`
-            results=`echo ${response} | grep -oE "login refused|login success|connection created"`
-            case ${results} in
-                "login refused")
-                    log "${USERNAME[$J]} refused."
-                    J=`expr ${J} + 1`
-                    ;;
-                "login success")
-                    log "${USERNAME[$J]} succeeded."
-                    ;;
-                "connection created")
-                    log "${USERNAME[$J]} connection created."
-                    ;;
-            esac
-        done
+  interfaces=("eth0.2")
+  devices=("wan")
+  for j in $(seq 1 "${IF_NUM}"); do
+    interfaces+=("macvlan${j}")
+    devices+=("vwan${j}")
     done
-    log "macvlan done.\n"
+
+  load_users
+  current=0
+
+  for i in $(seq 0 "${IF_NUM}"); do
+    log "-----------------------------------"
+    log "Initiating ${interfaces[$i]}."
+    get_ip "${interfaces[${i}]}" "${devices[${i}]}"
+
+    retry=0
+    success=
+    while [[ -z "${success}" && "${retry}" -lt 5 && "${current}" -lt "${#usernames[@]}" ]]; do
+      ((retry += 1))
+      login ${current}
+      success=$(echo ${response} | grep -oE "login success|connection created")
+      created=$(echo ${response} | grep -oE "connection created")
+      result=$(echo ${response} | grep -oE "login refused|login on error|logout refused|login success|connection created")
+      log "Result: ${usernames[${current}]} ${result}"
+      if [[ -z "${result}" ]]; then
+        log "${response}"
+      fi
+      if [[ -z "${success}" ]]; then
+        ((current += 1))
+      fi
+      if [[ -n "${created}" ]]; then
+        ((current -= 1))
+      fi
+    done
+    ((current += 1))
+  done
+  log "Done."
 }
 
 case $1 in
-    *)
-      all
-      ;;
+  *)
+    all
+    ;;
 esac
 exit

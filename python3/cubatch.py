@@ -1,5 +1,5 @@
+import sys
 import csv
-
 import cucommon
 
 INTERFACES = ['eth0.2'] + ['macvlan' + str(x) for x in range(1, 11)]
@@ -9,7 +9,8 @@ if __name__ == '__main__':
 
     username = []
     password = []
-    with open('users.txt', 'r') as file:
+    print(sys.path[0])
+    with open(sys.path[0] + '/users.csv', 'r') as file:
         user_reader = csv.reader(file, delimiter=',')
         for row in user_reader:
             username.append(row[0])

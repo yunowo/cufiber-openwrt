@@ -1,4 +1,4 @@
-#CUFiber-openwrt
+#cufiber-openwrt
  
 China Unicom "wo201" login script for OpenWrt
 

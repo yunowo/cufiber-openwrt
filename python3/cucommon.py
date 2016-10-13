@@ -19,7 +19,7 @@ class IfInfo:
         self.dic = ifcfg.interfaces()
 
     def get_ip(self, interface, logger):
-        logger.info('-----------------------------------')
+        logger.info('-' * 35)
         logger.info('Initiating %s', interface)
         ip = self.dic[interface]['inet']
         retry = 0
@@ -49,9 +49,9 @@ def login(username, password, ip, logger):
     socket.setdefaulttimeout(10)
     try:
         payload = {'lpsUserName': username,
-             'lpsPwd': password,
-             'wlanuserip': ip,
-             'basip': '61.148.2.182'}
+                   'lpsPwd': password,
+                   'wlanuserip': ip,
+                   'basip': '61.148.2.182'}
         data = str.encode(urllib.parse.urlencode(payload))
         request = urllib.request.Request('http://114.247.41.52:808/services/portal/portalAuth', data, HEADERS)
         response = urllib.request.urlopen(request).read().decode('UTF-8')

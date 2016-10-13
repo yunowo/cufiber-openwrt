@@ -1,5 +1,4 @@
-import ifcfg
-
+import sys
 import cucommon
 import userfinderconfig
 
@@ -23,7 +22,7 @@ if __name__ == '__main__':
                 success = result['success'] == 'true'
                 logger.info('Result: %s %s', current_user, msg)
                 if success is True:
-                    with open('users.txt', 'a') as file:
+                    with open(sys.path[0] + '/users.csv', 'a') as file:
                         file.write(str(current_user) + "," + password + "\n")
                 if msg == 'connection created':
                     success = True
