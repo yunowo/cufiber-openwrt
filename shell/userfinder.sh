@@ -55,7 +55,7 @@ for i in $(seq 1 ${num}); do
   log "macvlan${current_if}"
   get_ip "macvlan${current_if}"
   login
-    result=$(echo ${response} | grep -oE "login refused|login on error|logout refused|login success|connection created|msg:,")
+    result=$(echo ${response} | grep -oE 'login refused|login on error|logout refused|login success|connection created|"msg":""')
   log "Result: ${username} ${result}"
   case ${result} in
     "login success")

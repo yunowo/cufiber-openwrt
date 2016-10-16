@@ -73,9 +73,9 @@ all() {
     while [[ -z "${success}" && "${retry}" -lt 5 && "${current}" -lt "${#usernames[@]}" ]]; do
       ((retry += 1))
       login ${current}
-      success=$(echo ${response} | grep -oE "login success|connection created")
-      created=$(echo ${response} | grep -oE "connection created")
-      result=$(echo ${response} | grep -oE "login refused|login on error|logout refused|login success|connection created|msg:,")
+      success=$(echo ${response} | grep -oE 'login success|connection created')
+      created=$(echo ${response} | grep -oE 'connection created')
+      result=$(echo ${response} | grep -oE 'login refused|login on error|logout refused|login success|connection created|"msg":""')
       log "Result: ${usernames[${current}]} ${result}"
       if [[ -z "${result}" ]]; then
         log "${response}" # no matching result
