@@ -75,16 +75,16 @@ all() {
       login ${current}
       success=$(echo ${response} | grep -oE "login success|connection created")
       created=$(echo ${response} | grep -oE "connection created")
-      result=$(echo ${response} | grep -oE "login refused|login on error|logout refused|login success|connection created")
+      result=$(echo ${response} | grep -oE "login refused|login on error|logout refused|login success|connection created|msg:,")
       log "Result: ${usernames[${current}]} ${result}"
       if [[ -z "${result}" ]]; then
-        log "${response}"
+        log "${response}" # no matching result
       fi
       if [[ -z "${success}" ]]; then
-        ((current += 1))
+        ((current += 1)) # current user failed
       fi
       if [[ -n "${created}" ]]; then
-        ((current -= 1))
+        ((current -= 1)) # current interface already logged-in
       fi
     done
     ((current += 1))
