@@ -1,8 +1,8 @@
-#cufiber-openwrt
+# cufiber-openwrt
  
 China Unicom "wo201" login script for OpenWrt
 
-##Usage
+## Usage
 For all interfaces:
 
 Shell version:
