@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright (C) 2016 Yun Liu
 LOGFILE="/tmp/users.log"
-UA="Mozilla/5.0 (iPad; CPU OS 10_1 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14B67 Safari/601.1.46"
+UA="Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) CriOS/60.0.3112.89 Mobile/15A5370a Safari/602.1"
 
 log() {
   echo -e "$(date +'%Y-%m-%d %H:%M:%S') $1" >> "${LOGFILE}" 2>&1

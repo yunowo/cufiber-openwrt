@@ -1,6 +1,6 @@
 #!/bin/sh
 # Copyright (C) 2016 Yun Liu
-UA="Mozilla/5.0 (iPad; CPU OS 10_1 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14B67 Safari/601.1.46"
+UA="Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) CriOS/60.0.3112.89 Mobile/15A5370a Safari/602.1"
 COOKIE=$(curl 114.247.41.52:808 -I -s --retry 100 | grep "Set-Cookie" | cut -c13-55)
 NUMBER=6
 
